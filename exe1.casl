@@ -1,0 +1,25 @@
+EXE1 START
+     ; GR2に1, GR3に8を入れる
+     LAD GR2,1 ; GR2 <- 1
+     LAD GR3,8 ; GR3 <- 8
+
+;;;; サブルーチンCALC
+     CALL CALC
+     RET
+
+CALC PUSH 0,GR2 ;;GR2を退避
+     SLA GR2,1  ;; GR2を10倍する処理
+     ST GR2,WK
+     SLA GR2,2
+     ADDA GR2,WK
+     ;; GR2+GR3の処理
+     LAD GR0,0
+     ADDA GR0,GR2
+     ADDA GR0,GR3
+     ;; GR4,5を戻す
+     POP GR2
+     RET
+
+WK DS 1
+     END
+     
