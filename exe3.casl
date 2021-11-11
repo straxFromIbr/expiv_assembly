@@ -1,0 +1,29 @@
+EXE3 START
+     LAD GR1,30 ;; M
+     LAD GR2,84 ;; N
+     CALL CALC
+     RET
+
+CALC PUSH 0,GR3  ;; 作業領域確保  WKM
+     PUSH 0,GR4  ;;             WKN             
+     LD GR3,GR1  ;; MをWKMにコピー
+     LD GR4,GR2  ;; NをWKNにコピー
+     LAD GR0,0   ;;0でリセット
+FIVE CPA GR3,GR4 ;;(>)...
+     JZE TEN     ;; 等しければ10
+     JPL NINE    ;; WKM > WKNであれば 9
+     ;;;elsif 引き算
+     SUBA GR4,GR3
+     JUMP FIVE
+
+     RET
+
+NINE SUBA GR3,GR4
+     JUMP FIVE
+
+TEN LD GR0,GR4
+     ;; 作業領域の復元
+     POP GR4
+     POP GR3
+     RET
+     END
