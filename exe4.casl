@@ -1,23 +1,30 @@
 EXE4  START
       LAD GR1,-3 ;; M
       LAD GR2,2 ;; N
-      CALL CALC
+      CALL MULT
       RET
 
-CALC  PUSH 0,GR3  ;; wkM 作業領域確保  WKM
-      PUSH 0,GR4  ;; wkN             WKN             
-      LD GR3,GR1  ;; MをWKMにコピー
-      LD GR4,GR2  ;; NをWKNにコピー
+;; 掛け算サブルーチン
+MULT  PUSH 0,GR1  ;; オリジナルの値待避
+      PUSH 0,GR2
+      PUSH 0,GR6  ;; wkM 作業領域確保  WKM
+      PUSH 0,GR7  ;; wkN             WKN             
+      LD GR6,GR1  ;; MをWKMにコピー
+      LD GR7,GR2  ;; NをWKNにコピー
       LAD GR0,0   ;; 0でリセット
 FIVE  LAD GR1,1   ;; GR1に1
-      AND GR1,GR4 ;; GR1 &= GRwkN
+      AND GR1,GR7 ;; GR1 &= GRwkN
       JZE EIGHT   ;; 前述の演算結果が0であれば8に
-      ADDA GR0,GR3 ;; GR0+=GRwkM
-EIGHT SLA GR3,1     ;; GRwkM <<= 1
-      SRA GR4,1     ;; GRwkN >>= 1
+      ADDA GR0,GR6 ;; GR0+=GRwkM
+EIGHT SLA GR6,1     ;; GRwkM <<= 1
+      SRA GR7,1     ;; GRwkN >>= 1
       JNZ FIVE    ;; GRwkMがノンゼロであればもどる
-      POP GR4      ;; ワーキングメモリの解放
-      POP GR3
+      ;;;;; ワーキングメモリの解放
+      POP GR7      
+      POP GR6
+      POP GR2
+      POP GR1
       RET
+;; サブルーチンここまで
       END
 
