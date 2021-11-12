@@ -1,0 +1,53 @@
+EXE5  START
+      LAD GR1,3 ;; x
+      LAD GR2,4 ;; y
+      CALL POW
+      RET
+
+;; 冪乗サブルーチン
+;;    基数(x)    : GR1
+;;    冪数(y)    : GR2
+;;    カウンタ(y) : GR5 初期値y(GR2)
+
+POW   PUSH 0,GR5  ;; カウンタレジスタ待避
+      PUSH 0,GR1  ;; オリジナルの値待避
+      PUSH 0,GR2 
+      LD GR5,GR2  ;; カウンタ <- y
+      LD GR2,GR1  ;; GR2(N) <- x
+      LAD GR1,1   ;; GR1(M) <- 1
+FOUR  CALL MULT   ;; GR0 = GR1
+      LD GR1,GR0  ;; GR1(M) = MULTの結果
+      SUBA GR5,=1 ;; カウンタ(GR5)を1減らす
+      JPL FOUR    ;; カウンタ>0であれば4にジャンプ
+      ;; 退避した値を戻す
+     
+      POP GR2      
+      POP GR1
+      POP GR5
+      RET
+;; ここまで
+
+;; 掛け算サブルーチン
+MULT  PUSH 0,GR1  ;; オリジナルの値待避
+      PUSH 0,GR2
+      PUSH 0,GR6  ;; wkM 作業領域確保  WKM
+      PUSH 0,GR7  ;; wkN             WKN             
+      LD GR6,GR1  ;; MをWKMにコピー
+      LD GR7,GR2  ;; NをWKNにコピー
+      LAD GR0,0   ;; 0でリセット
+FIVE  LAD GR1,1   ;; GR1に1
+      AND GR1,GR7 ;; GR1 &= GRwkN
+      JZE EIGHT   ;; 前述の演算結果が0であれば8に
+      ADDA GR0,GR6 ;; GR0+=GRwkM
+EIGHT SLA GR6,1     ;; GRwkM <<= 1
+      SRA GR7,1     ;; GRwkN >>= 1
+      JNZ FIVE    ;; GRwkMがノンゼロであればもどる
+      ;;;;; ワーキングメモリの解放
+      POP GR7      
+      POP GR6
+      POP GR2
+      POP GR1
+      RET
+;; サブルーチンここまで
+      END
+
